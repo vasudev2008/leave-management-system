@@ -18,6 +18,8 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "locktite_leave.db")
 BACKUP_DIR = os.path.join(BASE_DIR, "backups")
+if os.environ.get("VERCEL"):
+    BACKUP_DIR="/tmp/backups"
 os.makedirs(BACKUP_DIR, exist_ok=True)
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
