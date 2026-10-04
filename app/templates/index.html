@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Locktite India Pvt Ltd - Official Employee Leave Management System. Manage employees, leave entries, adjustments, and reports.">
+  <meta property="og:title" content="Locktite India Pvt Ltd — Employee Leave Management System">
+  <meta property="og:description" content="Official Enterprise Employee Leave Management System for Locktite India Pvt Ltd.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://leave.locktiteindia.com/">
+  <title>Locktite India Pvt Ltd - Employee Leave Management System</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%231e3a8a%22/><text y=%2268%22 x=%2250%22 font-size=%2255%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22%23ffffff%22>L</text></svg>">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. LOGIN SYSTEM SCREEN (Default on unauthenticated load)
+       ========================================================================= -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-brand-logo">L</div>
+        <h2>LOCKTITE INDIA PVT LTD</h2>
+        <p>Employee Leave Management System</p>
+      </div>
+
+      <div class="login-body">
+        <div id="login-error-msg" class="alert alert-danger" style="display:none;"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label required" for="login-user-id">User ID</label>
+            <input type="text" id="login-user-id" class="form-control" placeholder="Enter your office User ID" required autofocus value="admin">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required" for="login-password">Password</label>
+            <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required value="admin123">
+          </div>
+
+          <div style="display:flex; gap: 10px; margin-top: 24px;">
+            <button type="button" id="btn-login-exit" class="btn btn-secondary" style="flex:1;">Exit</button>
+            <button type="submit" id="btn-login-submit" class="btn btn-primary" style="flex:2;">Login</button>
+          </div>
+        </form>
+
+        <!-- Quick Credentials Helper for Verification -->
+        <div class="quick-login-chips">
+          <div class="quick-login-title">Quick Test Accounts (Click to Fill):</div>
+          <div class="chips-list">
+            <span class="chip" data-user="admin" data-pass="admin123">👑 Administrator (admin / admin123)</span>
+            <span class="chip" data-user="entry1" data-pass="entry123">✍️ Entry Clerk (entry1 / entry123)</span>
+            <span class="chip" data-user="report1" data-pass="report123">📊 Report User (report1 / report123)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       2. MAIN DESKTOP APPLICATION CONTAINER
+       ========================================================================= -->
+  <div id="app-container" style="display:none;">
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMobileSidebar(false)"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">L</div>
+        <div>
+          <div class="brand-title">LOCKTITE INDIA</div>
+          <div class="brand-subtitle">Leave Management</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <a class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="nav-section-title">Master Data</div>
+        <a class="nav-item" data-tab="master-employees">
+          <span class="nav-icon">👥</span>
+          <span>Employees Master</span>
+        </a>
+
+        <div class="nav-section-title entry-only">Leave Operations</div>
+        <a class="nav-item entry-only" data-tab="entry-leave">
+          <span class="nav-icon">📝</span>
+          <span>Leave Entry & History</span>
+        </a>
+
+        <div class="nav-section-title">Reporting</div>
+        <a class="nav-item" data-tab="reports">
+          <span class="nav-icon">📑</span>
+          <span>Official Reports</span>
+        </a>
+
+        <div class="admin-only">
+          <div class="nav-section-title">Administration</div>
+          <a class="nav-item" data-tab="admin-users">
+            <span class="nav-icon">👤</span>
+            <span>User Management</span>
+          </a>
+          <a class="nav-item" data-tab="admin-leave-types">
+            <span class="nav-icon">🏷️</span>
+            <span>Leave Categories</span>
+          </a>
+          <a class="nav-item" data-tab="admin-audit">
+            <span class="nav-icon">📜</span>
+            <span>Audit Trail</span>
+          </a>
+          <a class="nav-item" data-tab="admin-backup">
+            <span class="nav-icon">💾</span>
+            <span>Backup & Restore</span>
+          </a>
+          <a class="nav-item" data-tab="admin-settings">
+            <span class="nav-icon">⚙️</span>
+            <span>System Settings</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-avatar" id="display-user-avatar">A</div>
+          <div class="user-details">
+            <div class="user-name" id="display-user-name">Administrator</div>
+            <span class="user-role-badge role-admin" id="display-user-role">ADMIN</span>
+          </div>
+        </div>
+        <div style="display:flex; gap: 6px; margin-top: 4px;">
+          <button class="btn btn-secondary btn-sm" id="btn-change-password-modal" style="flex:1; padding: 4px; font-size:11px;" title="Change Password">🔑 Password</button>
+          <button class="btn btn-danger btn-sm" id="btn-logout" style="flex:1; padding: 4px; font-size:11px;" title="Logout">🚪 Logout</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <div class="top-header-left">
+          <button class="mobile-menu-btn" id="mobile-toggle-btn" aria-label="Toggle navigation menu" onclick="toggleMobileSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="header-company-name">
+            <span>LOCKTITE INDIA PVT LTD</span>
+            <span style="color: var(--text-muted); font-size: 13px; font-weight: normal;">| Employee Leave Management System</span>
+          </div>
+        </div>
+        <div class="top-header-right">
+          <div class="current-datetime" id="live-clock">
+            Loading date...
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Viewport -->
+      <main class="content-viewport">
+        <div id="view-dashboard" class="page-view"></div>
+        <div id="view-master-employees" class="page-view" style="display:none;"></div>
+        <div id="view-entry-leave" class="page-view" style="display:none;"></div>
+        <div id="view-reports" class="page-view" style="display:none;"></div>
+        <div id="view-admin-users" class="page-view" style="display:none;"></div>
+        <div id="view-admin-leave-types" class="page-view" style="display:none;"></div>
+        <div id="view-admin-audit" class="page-view" style="display:none;"></div>
+        <div id="view-admin-backup" class="page-view" style="display:none;"></div>
+        <div id="view-admin-settings" class="page-view" style="display:none;"></div>
+      </main>
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================================
+       3. MODALS AND DIALOGS
+       ========================================================================= -->
+
+  <!-- Employee Add/Edit Modal -->
+  <div id="modal-employee" class="modal-backdrop" style="display:none;">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-employee-title">Employee Form</div>
+        <button class="modal-close" onclick="closeModal('modal-employee')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-employee-body"></div>
+    </div>
+  </div>
+
+  <!-- Employee Full Profile & Statement Modal -->
+  <div id="modal-details" class="modal-backdrop" style="display:none;">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-details-title">Employee Details</div>
+        <button class="modal-close" onclick="closeModal('modal-details')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-details-body"></div>
+    </div>
+  </div>
+
+  <!-- Sensitive / Authorization Password Modal -->
+  <div id="modal-sensitive" class="modal-backdrop" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-sensitive-title">Authorize Action</div>
+        <button class="modal-close" onclick="closeModal('modal-sensitive')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-sensitive-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-sensitive')">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-sensitive-confirm">Authorize & Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin General Modal (Users, Leave Types) -->
+  <div id="modal-admin" class="modal-backdrop" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-admin-title">System Settings</div>
+        <button class="modal-close" onclick="closeModal('modal-admin')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-admin-body"></div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="modal-change-password" class="modal-backdrop" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div class="modal-title">Change Password</div>
+        <button class="modal-close" onclick="closeModal('modal-change-password')">&times;</button>
+      </div>
+      <form id="form-change-password">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label required">Current Password</label>
+            <input type="password" id="cp-current" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">New Password</label>
+            <input type="password" id="cp-new" class="form-control" required minlength="6" placeholder="Min 6 characters">
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Confirm New Password</label>
+            <input type="password" id="cp-confirm" class="form-control" required minlength="6">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-change-password')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Application Controller -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
